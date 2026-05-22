@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <UserSecretsId>235ed7d9-f867-404b-898f-65413d44377c</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
+	  <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.7" />
+	  <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
+	  <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
+	  <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BasErpFramework.Application.Dto\BasErpFramework.Application.Dto.csproj" />
+    <ProjectReference Include="..\BasErpFramework.Application.Interface\BasErpFramework.Application.Interface.csproj" />
+    <ProjectReference Include="..\BasErpFramework.Application.Main\BasErpFramework.Application.Main.csproj" />
+    <ProjectReference Include="..\BasErpFramework.Domain.Core\BasErpFramework.Domain.Core.csproj" />
+    <ProjectReference Include="..\BasErpFramework.Infrastructure.Repository\BasErpFramework.Infrastructure.Repository.csproj" />
+    <ProjectReference Include="..\BasErpFramework.Transversal.Logging\BasErpFramework.Transversal.Logging.csproj" />
+    <ProjectReference Include="..\BasErpFramework.Infrastructure.Data\BasErpFramework.Infrastructure.Data.csproj" />
+    <ProjectReference Include="..\..\ServiceDefaults\BasErpFramework.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+</Project>

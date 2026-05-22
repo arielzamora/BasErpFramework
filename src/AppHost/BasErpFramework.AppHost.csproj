@@ -1,0 +1,20 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.3.5">
+
+  <ItemGroup>
+    <ProjectReference Include="..\backend\BasErpFramework.Services.WebApi\BasErpFramework.Services.WebApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.NodeJs" Version="9.5.2" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="13.3.5" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>93c95c03-f33a-4b93-ac8b-2e4ca6fe1bad</UserSecretsId>
+  </PropertyGroup>
+
+</Project>

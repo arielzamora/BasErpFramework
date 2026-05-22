@@ -11,8 +11,8 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Backend (if added later)
+.vs/
 bin/
 obj/
-*.user
-*.suo
+logs/
+TestResults/

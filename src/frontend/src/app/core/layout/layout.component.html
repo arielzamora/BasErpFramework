@@ -7,6 +7,12 @@
     
     <div class="navbar-content">
       @if (tenantService.currentTenant(); as tenant) {
+        @if (tenant.type === 'premium') {
+          <div class="search-bar me-3">
+            <input type="text" class="form-control" placeholder="✨ Buscá lo que quieras (IA)" 
+                   [(ngModel)]="searchQuery" (keyup.enter)="performSearch()">
+          </div>
+        }
         <div class="tenant-indicator">
           <span class="badge" [ngClass]="'badge-' + tenant.type">
             {{ tenant.name }}

@@ -1,0 +1,27 @@
+<Solution>
+  <Folder Name="/Aplication/">
+    <Project Path="BasErpFramework.Application.Dto/BasErpFramework.Application.Dto.csproj" />
+    <Project Path="BasErpFramework.Application.Interface/BasErpFramework.Application.Interface.csproj" />
+    <Project Path="BasErpFramework.Application.Main/BasErpFramework.Application.Main.csproj" />
+  </Folder>
+  <Folder Name="/Dominio/">
+    <Project Path="BasErpFramework.Domain.Core/BasErpFramework.Domain.Core.csproj" />
+    <Project Path="BasErpFramework.Domain.Entity/BasErpFramework.Domain.Entity.csproj" />
+    <Project Path="BasErpFramework.Domain.Interface/BasErpFramework.Domain.Interface.csproj" />
+  </Folder>
+  <Folder Name="/Infraestructura/">
+    <Project Path="BasErpFramework.Infrastructure.Data/BasErpFramework.Infrastructure.Data.csproj" />
+    <Project Path="BasErpFramework.Infrastructure.Interface/BasErpFramework.Infrastructure.Interface.csproj" />
+    <Project Path="BasErpFramework.Infrastructure.Repository/BasErpFramework.Infrastructure.Repository.csproj" />
+  </Folder>
+  <Folder Name="/Prueba/">
+    <Project Path="BasErpFramework.Application.UnitTests/BasErpFramework.Application.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/Servicio/">
+    <Project Path="BasErpFramework.Services.WebApi/BasErpFramework.Services.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/Transversal/">
+    <Project Path="BasErpFramework.Transversal.Common/BasErpFramework.Transversal.Common.csproj" />
+    <Project Path="BasErpFramework.Transversal.Logging/BasErpFramework.Transversal.Logging.csproj" />
+  </Folder>
+</Solution>
