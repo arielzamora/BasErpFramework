@@ -1,0 +1,18 @@
+# Monorepo Root gitignore
+node_modules/
+dist/
+.env
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE Files
+.vscode/
+.idea/
+
+# Backend (if added later)
+bin/
+obj/
+*.user
+*.suo

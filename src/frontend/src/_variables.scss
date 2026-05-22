@@ -1,0 +1,32 @@
+// BAS ERP Framework - Global SCSS Variables
+
+// Primary Colors (BAS Corporate Blue)
+$primary-color: #004B87;
+$primary-light: #3371A3;
+$primary-dark: #003366;
+
+// Secondary Colors
+$secondary-color: #E2E8F0; // light blue/gray
+$secondary-dark: #CBD5E1;
+
+// Backgrounds
+$bg-color: #F8F9FA;
+$surface-color: #FFFFFF;
+
+// Typography
+$font-family-base: 'Segoe UI', Arial, sans-serif;
+$text-color: #333333;
+$text-muted: #6c757d;
+
+// Borders & Shadows
+$border-color: #DEE2E6;
+$border-radius: 8px;
+$border-radius-lg: 12px;
+$box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+$box-shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+// Semantic Colors
+$success-color: #198754;
+$warning-color: #ffc107;
+$danger-color: #dc3545;
+$info-color: #0dcaf0;

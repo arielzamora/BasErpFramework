@@ -1,0 +1,35 @@
+<div class="layout-wrapper">
+  <!-- Top Navbar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <span class="fw-bold">BAS</span> ERP
+    </div>
+    
+    <div class="navbar-content">
+      @if (tenantService.currentTenant(); as tenant) {
+        <div class="tenant-indicator">
+          <span class="badge" [ngClass]="'badge-' + tenant.type">
+            {{ tenant.name }}
+          </span>
+        </div>
+      }
+      <button class="btn btn-outline" (click)="logout()">Cambiar Entorno</button>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <a routerLink="/app/dashboard" routerLinkActive="active" class="nav-item">Dashboard</a>
+        <a routerLink="/app/products" routerLinkActive="active" class="nav-item">Productos</a>
+        <!-- More links -->
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content-area">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

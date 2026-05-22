@@ -1,0 +1,78 @@
+@import 'variables';
+
+// Reset & Base Styles
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: $font-family-base;
+  background-color: $bg-color;
+  color: $text-color;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Utility Classes
+.text-primary { color: $primary-color; }
+.bg-primary { background-color: $primary-color; }
+.text-muted { color: $text-muted; }
+
+// Modern Cards
+.card {
+  background-color: $surface-color;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+  border: 1px solid $border-color;
+  padding: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &.hover-elevate:hover {
+    transform: translateY(-2px);
+    box-shadow: $box-shadow-hover;
+  }
+}
+
+// Buttons
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-family: $font-family-base;
+  font-weight: 500;
+  border-radius: $border-radius;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+
+  &-primary {
+    background-color: $primary-color;
+    color: white;
+    &:hover { background-color: $primary-dark; }
+  }
+
+  &-outline {
+    background-color: transparent;
+    border-color: $primary-color;
+    color: $primary-color;
+    &:hover {
+      background-color: $primary-color;
+      color: white;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Layout Container
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}

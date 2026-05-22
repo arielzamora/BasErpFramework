@@ -1,0 +1,58 @@
+<div class="card p-0 overflow-hidden">
+  <div class="table-header p-3 border-bottom" *ngIf="title">
+    <h3 class="m-0 text-primary">{{ title }}</h3>
+  </div>
+  
+  <div class="table-responsive">
+    <table class="table w-100">
+      <thead>
+        <tr>
+          <th>#</th>
+          @for (col of columns; track col.key) {
+            <th>{{ col.label }}</th>
+          }
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of data; track item.id; let i = $index) {
+          <tr>
+            <td>{{ i + 1 }}</td>
+            @for (col of columns; track col.key) {
+              <td>
+                @switch (col.type) {
+                  @case ('currency') {
+                    {{ item[col.key] | currency:'USD' }}
+                  }
+                  @case ('boolean') {
+                    <span class="badge" [ngClass]="item[col.key] ? 'badge-isolated' : 'badge-danger'">
+                      {{ item[col.key] ? 'Sí' : 'No' }}
+                    </span>
+                  }
+                  @case ('badge') {
+                    <span class="badge badge-premium">
+                      {{ item[col.key] }}
+                    </span>
+                  }
+                  @default {
+                    {{ item[col.key] }}
+                  }
+                }
+              </td>
+            }
+            <td class="text-end actions-cell">
+              <button class="btn btn-sm btn-outline me-2" (click)="onEdit(item)">Editar</button>
+              <button class="btn btn-sm btn-danger" (click)="onDelete(item)">Eliminar</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td [attr.colspan]="columns.length + 2" class="text-center p-4 text-muted">
+              No hay datos disponibles.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

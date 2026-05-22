@@ -1,0 +1,25 @@
+<div class="login-container">
+  <div class="login-header">
+    <div class="logo">
+      <span class="text-primary fw-bold">BAS</span> ERP Framework
+    </div>
+    <h2>Selecciona un Entorno</h2>
+    <p class="text-muted">Elige el tenant al que deseas ingresar para simular la sesión.</p>
+  </div>
+
+  <div class="tenant-cards">
+    @for (tenant of tenants; track tenant.id) {
+      <div class="card hover-elevate tenant-card" (click)="selectTenant(tenant)">
+        <div class="card-icon" [ngClass]="tenant.type">
+          <i class="icon-placeholder"></i>
+        </div>
+        <div class="card-content">
+          <h3>{{ tenant.name }}</h3>
+          <span class="badge" [ngClass]="'badge-' + tenant.type">
+            {{ tenant.type | uppercase }}
+          </span>
+        </div>
+      </div>
+    }
+  </div>
+</div>
