@@ -11,5 +11,33 @@
   [columns]="columns()"
   [data]="products()"
   (edit)="handleEdit($event)"
-  (delete)="handleDelete($event)">
+  (delete)="handleDeleteRequest($event)">
 </app-generic-table>
+
+<!-- Form Modal (Create/Edit) -->
+<app-modal 
+  [show]="showFormModal()" 
+  [title]="selectedProduct() ? 'Editar Producto' : 'Nuevo Producto'"
+  (close)="showFormModal.set(false)">
+  <app-product-form
+    [product]="selectedProduct()"
+    (save)="onSaveProduct($event)"
+    (cancel)="showFormModal.set(false)">
+  </app-product-form>
+</app-modal>
+
+<!-- Delete Confirmation Modal -->
+<app-modal 
+  [show]="showDeleteModal()" 
+  title="Confirmar Eliminación"
+  (close)="showDeleteModal.set(false)">
+  <div class="p-3 text-center">
+    <p>¿Estás seguro que deseas eliminar el producto <strong class="text-primary">{{ selectedProduct()?.nombre }}</strong>?</p>
+    <p class="text-muted small mb-4">Esta acción no se puede deshacer.</p>
+    
+    <div class="d-flex justify-content-center gap-2 mt-4">
+      <button class="btn btn-outline" (click)="showDeleteModal.set(false)">Cancelar</button>
+      <button class="btn" style="background: #ef4444; color: white;" (click)="confirmDelete()">Eliminar Definitivamente</button>
+    </div>
+  </div>
+</app-modal>

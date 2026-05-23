@@ -5,10 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { TenantService } from '../services/tenant.service';
 import { ProductService } from '../services/product.service';
 
+import { ToastComponent } from '../../shared/components/toast/toast.component';
+
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, ToastComponent],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss']
 })

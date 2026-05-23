@@ -25,7 +25,10 @@ export class SignalrService {
 
     this.hubConnection
       .start()
-      .then(() => console.log('SignalR Connection Started'))
+      .then(() => {
+        console.log('SignalR Connection Started');
+        this.hubConnection?.invoke('JoinTenantGroup', tenantId);
+      })
       .catch(err => console.error('Error while starting SignalR connection: ' + err));
 
     this.addListeners();

@@ -1,28 +1,47 @@
-<div class="card p-0 overflow-hidden">
-  <div class="table-header p-3 border-bottom" *ngIf="title">
-    <h3 class="m-0 text-primary">{{ title }}</h3>
+<div class="card p-0 overflow-hidden table-wrapper">
+  
+  <!-- Toolbar: Title & Search -->
+  <div class="table-toolbar p-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <h3 class="m-0 text-primary" *ngIf="title">{{ title }}</h3>
+    
+    <div class="search-box glass-input-wrapper">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="form-control glass-input" 
+             placeholder="Buscar en la tabla..." 
+             (input)="onSearchChange($event)">
+    </div>
   </div>
   
+  <!-- Table -->
   <div class="table-responsive">
     <table class="table w-100">
       <thead>
         <tr>
           <th>#</th>
           @for (col of columns; track col.key) {
-            <th>{{ col.label }}</th>
+            <th (click)="toggleSort(col.key)" class="sortable-header" title="Clic para ordenar">
+              <div class="d-flex align-items-center gap-1">
+                {{ col.label }}
+                @if (sortColumn() === col.key) {
+                  <span class="sort-icon active">{{ sortDirection() === 'asc' ? '↑' : '↓' }}</span>
+                } @else {
+                  <span class="sort-icon text-muted" style="opacity: 0.3">↕</span>
+                }
+              </div>
+            </th>
           }
           <th class="text-end">Acciones</th>
         </tr>
       </thead>
       <tbody>
-        @for (item of data; track item.id; let i = $index) {
-          <tr>
-            <td>{{ i + 1 }}</td>
+        @for (item of paginatedData(); track item.id; let i = $index) {
+          <tr class="fade-in-row">
+            <td class="text-muted">{{ (currentPage() - 1) * pageSize() + i + 1 }}</td>
             @for (col of columns; track col.key) {
               <td>
                 @switch (col.type) {
                   @case ('currency') {
-                    {{ item[col.key] | currency:'USD' }}
+                    <strong>{{ item[col.key] | currency:'USD' }}</strong>
                   }
                   @case ('boolean') {
                     <span class="badge" [ngClass]="item[col.key] ? 'badge-isolated' : 'badge-danger'">
@@ -47,12 +66,37 @@
           </tr>
         } @empty {
           <tr>
-            <td [attr.colspan]="columns.length + 2" class="text-center p-4 text-muted">
-              No hay datos disponibles.
+            <td [attr.colspan]="columns.length + 2" class="text-center p-5">
+              <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h4 class="mt-3 text-dark">No hay resultados</h4>
+                <p class="text-muted">Intenta con otra búsqueda o agrega nuevos registros.</p>
+              </div>
             </td>
           </tr>
         }
       </tbody>
     </table>
+  </div>
+
+  <!-- Pagination Footer -->
+  <div class="table-footer p-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div class="d-flex align-items-center gap-2 text-muted small">
+      Mostrar 
+      <select class="form-select form-select-sm pagination-select" (change)="changePageSize($event)">
+        <option value="5" [selected]="pageSize() === 5">5</option>
+        <option value="10" [selected]="pageSize() === 10">10</option>
+        <option value="20" [selected]="pageSize() === 20">20</option>
+      </select>
+      por pág.
+    </div>
+    
+    <div class="pagination-controls d-flex align-items-center gap-3">
+      <span class="text-muted small fw-semibold">Página {{ currentPage() }} de {{ totalPages() }}</span>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline btn-sm" (click)="prevPage()" [disabled]="currentPage() === 1">Anterior</button>
+        <button class="btn btn-outline btn-sm" (click)="nextPage()" [disabled]="currentPage() >= totalPages()">Siguiente</button>
+      </div>
+    </div>
   </div>
 </div>
