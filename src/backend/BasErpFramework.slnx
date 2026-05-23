@@ -24,4 +24,8 @@
     <Project Path="BasErpFramework.Transversal.Common/BasErpFramework.Transversal.Common.csproj" />
     <Project Path="BasErpFramework.Transversal.Logging/BasErpFramework.Transversal.Logging.csproj" />
   </Folder>
+  <Folder Name="/Orquestador/">
+    <Project Path="..\AppHost\BasErpFramework.AppHost.csproj" />
+    <Project Path="..\ServiceDefaults\BasErpFramework.ServiceDefaults.csproj" />
+  </Folder>
 </Solution>

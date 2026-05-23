@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace BasErpFramework.Services.WebApi.Controllers;
 
-[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class ProductosController : ControllerBase
