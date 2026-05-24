@@ -181,6 +181,12 @@ resource frontendApp 'Microsoft.App/containerApps@2023-05-01' = {
         {
           name: 'frontend'
           image: '${acrLoginServer}/${frontendImage}'
+          env: [
+            {
+              name: 'BACKEND_URL'
+              value: 'https://${backendApp.properties.configuration.ingress.fqdn}'
+            }
+          ]
           resources: {
             cpu: json('0.5')
             memory: '1.0Gi'

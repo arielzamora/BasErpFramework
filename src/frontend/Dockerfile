@@ -15,5 +15,5 @@ COPY --from=build /app/dist/frontend/browser /usr/share/nginx/html
 # Exponer el puerto estándar de Nginx
 EXPOSE 80
 
-# Comando por defecto para arrancar Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Comando por defecto para arrancar Nginx, inyectando la variable dinámica primero
+CMD ["/bin/sh", "-c", "sed -i \"s|</head>|<script>window.env = { apiUrl: '${BACKEND_URL}' };</script></head>|g\" /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]

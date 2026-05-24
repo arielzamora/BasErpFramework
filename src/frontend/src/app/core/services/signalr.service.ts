@@ -17,9 +17,11 @@ export class SignalrService {
   public productUpdates$ = new Subject<ProductUpdateEvent>();
 
   public startConnection(tenantId: string) {
+    const envUrl = (window as any).env?.apiUrl;
+    const baseHubUrl = envUrl ? `${envUrl}/hubs/producto` : 'https://localhost:7197/hubs/producto';
+    
     this.hubConnection = new signalR.HubConnectionBuilder()
-      // Adjust port if needed. Notice the ?tenantId=... to pass it in query string
-      .withUrl(`https://localhost:7197/hubs/producto?tenantId=${tenantId}`)
+      .withUrl(`${baseHubUrl}?tenantId=${tenantId}`)
       .withAutomaticReconnect()
       .build();
 
