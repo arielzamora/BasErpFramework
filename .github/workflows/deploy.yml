@@ -1,0 +1,109 @@
+name: Deploy BAS ERP Framework
+
+on:
+  push:
+    branches:
+      - main
+
+# ---------------------------------------------------------------------------------------
+# NOTA: Debes configurar los siguientes Secretos en las configuraciones de tu repositorio
+# en GitHub (Settings > Secrets and variables > Actions):
+# - AZURE_CREDENTIALS: JSON con las credenciales del Service Principal
+# - ACR_USERNAME: Usuario de tu Azure Container Registry
+# - ACR_PASSWORD: Password de tu Azure Container Registry
+# ---------------------------------------------------------------------------------------
+
+env:
+  ACR_LOGIN_SERVER: containererpframework.azurecr.io
+  BACKEND_IMAGE_NAME: bas-erp-backend
+  FRONTEND_IMAGE_NAME: bas-erp-frontend
+  BACKEND_APP_NAME: ca-bas-erp-backend
+  FRONTEND_APP_NAME: ca-bas-erp-frontend
+  RESOURCE_GROUP: rg-bas-erp
+
+jobs:
+  # ==========================================
+  # JOB 1: Test
+  # ==========================================
+  test:
+    name: Test .NET Solution
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código fuente
+        uses: actions/checkout@v4
+
+      - name: Configurar SDK de .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restaurar dependencias
+        run: dotnet restore src/backend/BasErpFramework.sln
+
+      - name: Ejecutar Pruebas
+        run: dotnet test src/backend/BasErpFramework.sln --configuration Release --no-restore
+
+  # ==========================================
+  # JOB 2: Construir y Subir Imágenes a ACR
+  # ==========================================
+  build-and-push:
+    name: Build & Push Docker Images
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código fuente
+        uses: actions/checkout@v4
+
+      - name: Iniciar sesión en Azure Container Registry (ACR)
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build y Push del Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./src/backend
+          file: ./src/backend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.ACR_LOGIN_SERVER }}/${{ env.BACKEND_IMAGE_NAME }}:latest
+            ${{ env.ACR_LOGIN_SERVER }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Build y Push del Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./src/frontend
+          file: ./src/frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.ACR_LOGIN_SERVER }}/${{ env.FRONTEND_IMAGE_NAME }}:latest
+            ${{ env.ACR_LOGIN_SERVER }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ github.sha }}
+
+  # ==========================================
+  # JOB 3: Despliegue en Azure Container Apps
+  # ==========================================
+  deploy:
+    name: Deploy to Azure Container Apps
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Autenticación en Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Desplegar Backend en Container App
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          containerAppName: ${{ env.BACKEND_APP_NAME }}
+          imageToDeploy: ${{ env.ACR_LOGIN_SERVER }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Desplegar Frontend en Container App
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          resourceGroup: ${{ env.RESOURCE_GROUP }}
+          containerAppName: ${{ env.FRONTEND_APP_NAME }}
+          imageToDeploy: ${{ env.ACR_LOGIN_SERVER }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ github.sha }}
