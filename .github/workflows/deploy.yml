@@ -38,10 +38,10 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restaurar dependencias
-        run: dotnet restore src/backend/BasErpFramework.sln
+        run: dotnet restore src/backend/BasErpFramework.slnx
 
       - name: Ejecutar Pruebas
-        run: dotnet test src/backend/BasErpFramework.sln --configuration Release --no-restore
+        run: dotnet test src/backend/BasErpFramework.slnx --configuration Release --no-restore
 
   # ==========================================
   # JOB 2: Construir y Subir Imágenes a ACR
