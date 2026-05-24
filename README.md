@@ -11,6 +11,16 @@ El sistema implementa una arquitectura unificada que combina las mejores tecnolo
 - **Tiempo Real**: **SignalR** integrado nativamente para enviar actualizaciones incrementales al cliente, evitando el costoso "Long Polling" y garantizando que los clientes siempre vean los datos en vivo.
 - **Base de Datos**: Microsoft SQL Server.
 
+## Diagramas de Arquitectura (C4 Model)
+
+A continuación, se presentan los diagramas de arquitectura C4 del sistema:
+
+### Contexto (Nivel 1)
+![C4 Contexto](docs/diagrams/c4-context.png)
+
+### Contenedores (Nivel 2)
+![C4 Contenedores](docs/diagrams/c4-container.png)
+
 ## Guía de Inicio Rápido (Local) - Ejecución con Docker Compose
 
 Para facilitar la evaluación de esta prueba técnica y asegurar que el entorno sea completamente reproducible sin requerir instalaciones previas de SDKs, se ha provisto un entorno Dockerizado completo.
