@@ -2,6 +2,8 @@
 
 Bienvenido al repositorio oficial del **Framework ERP Multitenant**. Esta Prueba de Concepto (PoC) demuestra una arquitectura robusta, reactiva y escalable diseñada para soportar hasta 1,500 clientes concurrentes, manejando catálogos de millones de productos con aislamiento estricto de datos y actualizaciones en tiempo real.
 
+🚀 **Despliegue en Vivo (Azure)**: [https://ca-bas-erp-frontend.blackcoast-ff28a7a6.westus2.azurecontainerapps.io/](https://ca-bas-erp-frontend.blackcoast-ff28a7a6.westus2.azurecontainerapps.io/)
+
 ## Arquitectura del Sistema
 
 El sistema implementa una arquitectura unificada que combina las mejores tecnologías modernas:
@@ -13,16 +15,12 @@ El sistema implementa una arquitectura unificada que combina las mejores tecnolo
 
 ## Diagramas de Arquitectura (C4 Model)
 
-A continuación, se presentan los diagramas de arquitectura C4 del sistema:
+Para mantener este archivo principal ágil y limpio, los diagramas detallados del modelo C4 se encuentran organizados en la carpeta de documentación del repositorio. 
 
-### Contexto (Nivel 1)
-![C4 Contexto](docs/diagrams/c4-context.png)
-
-### Contenedores (Nivel 2)
-![C4 Contenedores](docs/diagrams/c4-container.png)
-
-### Componentes del Backend (Nivel 3)
-![C4 Componentes](docs/diagrams/c4-component.png)
+Puedes consultarlos directamente en los siguientes enlaces:
+- 🗺️ [Diagrama de Contexto (Nivel 1)](docs/diagrams/c4-context.png)
+- 📦 [Diagrama de Contenedores (Nivel 2)](docs/diagrams/c4-container.png)
+- ⚙️ [Diagrama de Componentes del Backend (Nivel 3)](docs/diagrams/c4-component.png)
 
 ## Guía de Inicio Rápido (Local) - Ejecución con Docker Compose
 
