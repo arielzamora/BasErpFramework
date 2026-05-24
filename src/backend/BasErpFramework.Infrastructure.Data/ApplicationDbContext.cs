@@ -16,7 +16,8 @@ public class ApplicationDbContext : DbContext
     {
         _tenantContext = tenantContext;
         _configuration = configuration;
-        Database.EnsureCreated(); // Auto-crea la BD del tenant al vuelo
+        // NOTA: Se eliminó Database.EnsureCreated() del constructor por problemas de rendimiento 
+        // y restricciones en Azure SQL. La inicialización ya se hace en Program.cs al arrancar.
     }
 
     public DbSet<Producto> Productos { get; set; }
@@ -25,28 +26,17 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var tenantId = string.IsNullOrEmpty(_tenantContext.TenantId) ? "Default" : _tenantContext.TenantId;
+        // En Azure (producción), Bicep inyecta la cadena completa en DefaultConnection
+        var connectionString = _configuration.GetConnectionString("DefaultConnection");
         
-        // Obtenemos la conexión base inyectada por Aspire (apuntando al contenedor de SQL)
-        var baseConnectionString = _configuration.GetConnectionString("sqlserver");
-        
-        // Si no se encuentra en Aspire, o queremos forzar el SQL local con Autenticación de Windows
-        if (string.IsNullOrEmpty(baseConnectionString) || baseConnectionString.Contains("sa"))
+        // Si no está DefaultConnection, asumimos desarrollo local (Multi-tenant SQLEXPRESS)
+        if (string.IsNullOrEmpty(connectionString))
         {
-            // Apuntamos al SQL Server nativo de tu PC usando tu usuario de Windows y la instancia SQLEXPRESS
-            baseConnectionString = @"Server=localhost\SQLEXPRESS;Integrated Security=True;TrustServerCertificate=True;";
+            var tenantId = string.IsNullOrEmpty(_tenantContext.TenantId) ? "Default" : _tenantContext.TenantId;
+            connectionString = $@"Server=localhost\SQLEXPRESS;Database=BasErpBd_{tenantId};Integrated Security=True;TrustServerCertificate=True;";
         }
         
-        // Aseguramos TrustServerCertificate para desarrollo local
-        if (!baseConnectionString.Contains("TrustServerCertificate"))
-        {
-             baseConnectionString += ";TrustServerCertificate=True";
-        }
-
-        // Construimos el string final agregando el nombre de la BD dinámica
-        var tenantConnectionString = $"{baseConnectionString};Database=BasErpBd_{tenantId}";
-        
-        optionsBuilder.UseSqlServer(tenantConnectionString);
+        optionsBuilder.UseSqlServer(connectionString);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
