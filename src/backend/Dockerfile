@@ -6,10 +6,10 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 # Copiar toda la solución y restaurar
 COPY . .
-RUN dotnet restore "BasErpFramework.slnx"
+RUN dotnet restore "src/backend/BasErpFramework.slnx"
 
 # Moverse a la carpeta de Web API y compilar
-WORKDIR "/src/BasErpFramework.Services.WebApi"
+WORKDIR "/src/src/backend/BasErpFramework.Services.WebApi"
 RUN dotnet build "BasErpFramework.Services.WebApi.csproj" -c Release -o /app/build
 
 FROM build AS publish

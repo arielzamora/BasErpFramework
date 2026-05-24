@@ -64,7 +64,7 @@ jobs:
       - name: Build y Push del Backend
         uses: docker/build-push-action@v5
         with:
-          context: ./src/backend
+          context: .
           file: ./src/backend/Dockerfile
           push: true
           tags: |
