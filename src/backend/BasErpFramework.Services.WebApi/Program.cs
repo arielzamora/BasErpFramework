@@ -79,13 +79,13 @@ app.UseMiddleware<TenantMiddleware>();
   {
       try 
       {
-          using var scope = app.Services.CreateScope();
-          var tenantContext = scope.ServiceProvider.GetRequiredService<ITenantContext>();
-          
           var tenants = new[] { "Default", "TenantA", "TenantB" };
           foreach (var t in tenants)
           {
+              using var scope = app.Services.CreateScope();
+              var tenantContext = scope.ServiceProvider.GetRequiredService<ITenantContext>();
               tenantContext.TenantId = t;
+              
               using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
               context.Database.EnsureCreated();
               
