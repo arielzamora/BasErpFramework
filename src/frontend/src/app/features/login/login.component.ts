@@ -15,9 +15,9 @@ export class LoginComponent {
   private router = inject(Router);
 
   tenants: Tenant[] = [
-    { id: 'tenant-1', name: 'TechComponents S.A.', type: 'standard' },
-    { id: 'tenant-2', name: 'Logística Quilmes', type: 'isolated' },
-    { id: 'tenant-3', name: 'MegaCorp Enterprise AI-Powered', type: 'premium' }
+    { id: 'Default', name: 'TechComponents S.A.', type: 'standard' },
+    { id: 'TenantA', name: 'Logística Quilmes', type: 'isolated' },
+    { id: 'TenantB', name: 'MegaCorp Enterprise AI-Powered', type: 'premium' }
   ];
 
   selectTenant(tenant: Tenant) {
