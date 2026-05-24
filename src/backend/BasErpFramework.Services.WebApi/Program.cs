@@ -74,20 +74,27 @@ app.UseCors("CorsPolicy");
 
 app.UseMiddleware<TenantMiddleware>();
 
-  // Auto-migrate default or known tenants (or at least initialize the model)
-  using (var scope = app.Services.CreateScope())
+  // Auto-migrate default or known tenants in the background to avoid blocking Container App startup probe
+  _ = Task.Run(() => 
   {
-      var tenantContext = scope.ServiceProvider.GetRequiredService<ITenantContext>();
-      
-      var tenants = new[] { "Default", "TenantA", "TenantB" };
-      foreach (var t in tenants)
+      try 
       {
-          tenantContext.TenantId = t;
-          using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-          // Precaución: En Azure SQL Básico, EnsureCreated puede tomar unos segundos por cada tenant.
-          context.Database.EnsureCreated();
+          using var scope = app.Services.CreateScope();
+          var tenantContext = scope.ServiceProvider.GetRequiredService<ITenantContext>();
+          
+          var tenants = new[] { "Default", "TenantA", "TenantB" };
+          foreach (var t in tenants)
+          {
+              tenantContext.TenantId = t;
+              using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+              context.Database.EnsureCreated();
+          }
       }
-  }
+      catch (Exception ex)
+      {
+          Log.Error(ex, "Error creating tenant databases in background");
+      }
+  });
 app.UseAuthorization();
 
 app.MapControllers();
