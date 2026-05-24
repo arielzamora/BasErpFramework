@@ -11,39 +11,68 @@ El sistema implementa una arquitectura unificada que combina las mejores tecnolo
 - **Tiempo Real**: **SignalR** integrado nativamente para enviar actualizaciones incrementales al cliente, evitando el costoso "Long Polling" y garantizando que los clientes siempre vean los datos en vivo.
 - **Base de Datos**: Microsoft SQL Server.
 
-## Guía de Inicio Rápido (Local)
+## Guía de Inicio Rápido (Local) - Ejecución con Docker Compose
 
-Para facilitar la vida de los desarrolladores y el equipo de pruebas, hemos encapsulado todo el entorno (Frontend, Backend y Base de Datos) en contenedores de Docker.
+Para facilitar la evaluación de esta prueba técnica y asegurar que el entorno sea completamente reproducible sin requerir instalaciones previas de SDKs, se ha provisto un entorno Dockerizado completo.
 
-Para levantar todo el entorno con un solo comando:
+**Instrucciones claras para ejecutar el entorno:**
+
+1. Clona el repositorio y navega a la raíz del proyecto.
+2. Abre una terminal y ejecuta el siguiente comando:
 
 ```bash
 docker-compose up --build
 ```
 
-**¿Qué sucede al ejecutar este comando?**
-1. Se levanta la **UI de Angular** lista para recibir conexiones.
-2. Se levanta el contenedor de **SQL Server** nativo.
-3. Se enciende el **Backend API** en .NET.
-4. **Magia de Autoconfiguración**: En tiempo de ejecución (al arrancar), el Backend detecta la conexión al SQL Server y, a través de `context.Database.EnsureCreated()` (o `Migrate()`), auto-genera físicamente las bases de datos para nuestros 3 tenants de prueba. ¡No necesitas correr scripts de SQL manualmente!
+**¿Qué incluye este entorno?**
+- `db`: Contenedor oficial de Microsoft SQL Server 2022.
+- `backend`: API REST en .NET 9. Al arrancar, se conecta automáticamente a la base de datos SQL y auto-genera el esquema a través de Entity Framework Core Migrations (`context.Database.EnsureCreated()` en `Program.cs`), poblando la base de datos `BasErpBd_Default`.
+- `frontend`: SPA en Angular 19 servida a través de NGINX, escuchando en el puerto `4200` y configurada dinámicamente para conectarse al backend local expuesto en el puerto `8080`.
 
-## Estrategia de Multitenancy Seleccionada
+**Una vez finalizado el comando, accede a:**
+👉 **http://localhost:4200**
 
-Para este proyecto hemos descartado el enfoque clásico de "Tabla Compartida con columna Discriminadora" (ej. `TenantId` en cada tabla) y hemos apostado fuertemente por la estrategia de **Database-per-Tenant (Base de Datos Independiente por Tenant)**.
+---
 
-**Justificación Técnica:**
-- **Aislamiento Físico y Legal**: Al tener una base de datos física por cada cliente, garantizamos que los datos de un tenant jamás se crucen con los de otro por un error de programación. Esto facilita el cumplimiento de normativas de privacidad (GDPR).
-- **Mitigación del "Noisy Neighbor" (Vecino Ruidoso)**: En un ERP con 1,500 clientes, si un cliente enorme lanza un reporte pesadísimo sobre millones de registros de productos, no bloqueará las transacciones ni consumirá la CPU/RAM de la base de datos de los clientes más pequeños.
-- **Mantenibilidad**: Facilita los respaldos individuales (Point-in-Time Restore por cliente) y permite migrar un cliente específico a hardware dedicado si su volumen de negocio lo requiere.
+## Explicación de la Estrategia Multitenant Elegida
 
-## Flujo de CI/CD
+Para resolver el requerimiento de Multitenancy y la escala de alto rendimiento, **se ha elegido la estrategia de Bases de Datos Separadas (Database-per-Tenant)**, descartando el enfoque de "base de datos única con TenantId por tabla".
 
-El proyecto cuenta con un flujo de integración y entrega continua (CI/CD) completamente automatizado a través de **GitHub Actions** (`.github/workflows/deploy.yml`).
+**Justificación de la estrategia de Bases de Datos Separadas:**
+1. **Aislamiento de Datos (Data Isolation)**: Se garantiza física y legalmente que la información de un inquilino jamás colisione o se exponga a otro inquilino por una omisión en un `WHERE TenantId = X`.
+2. **Mitigación del Vecino Ruidoso (Noisy Neighbor)**: Las cargas computacionales intensivas sobre millones de registros de un inquilino grande no bloquearán los recursos ni la memoria de la base de datos de los inquilinos más pequeños.
+3. **Mantenibilidad Continua**: Cada base de datos puede ser respaldada o restaurada independientemente (Point-in-Time Restore) sin forzar un rollback masivo de todo el sistema.
 
-### Infraestructura como Código (IaC)
-Nos enorgullece destacar que para esta PoC no nos conformamos con despliegues manuales. Hemos implementado la arquitectura real utilizando **Azure Bicep**. En cada push a la rama `main`:
-1. **Test**: Se compila el código y se corren los Unit Tests en el runner de GitHub.
-2. **Build & Push**: Se construyen las imágenes de Docker de Angular y .NET y se empujan de forma segura a nuestro **Azure Container Registry (ACR)**.
-3. **Deploy Automático**: Bicep toma el control, aprovisiona un entorno serverless en **Azure Container Apps**, crea/actualiza la instancia de **Azure SQL Database**, inyecta secretamente la cadena de conexión cifrada y reinicia los contenedores sin tiempo de inactividad (Zero-Downtime Deployment).
+*(Para más detalles, consultar el documento `docs/adrs/0001-database-per-tenant-isolation.md`).*
 
-> **Nota sobre Docker Hub**: Si en el futuro se requiriera exportar el proyecto a un entorno no-Azure, el pipeline está diseñado modularmente. Bastaría con reemplazar la acción de `docker/login-action` para que apunte a `docker.io` con sus respectivas credenciales, y las imágenes se publicarían en el registro público o privado de Docker Hub.
+---
+
+## Integración y Despliegue Continuo (CI/CD)
+
+El repositorio incluye un pipeline completo configurado en `.github/workflows/deploy.yml` que valida automáticamente el código mediante pruebas unitarias en cada push.
+
+### ¿Cómo se realizaría el push de las imágenes hacia Docker Hub?
+Actualmente, por orgullo de ingeniería y profesionalismo de esta PoC, las imágenes se envían a un registro privado corporativo en la nube (**Azure Container Registry**) y se despliegan de manera automatizada usando **Infraestructura como Código (Bicep)**.
+
+Sin embargo, para adaptar el pipeline y hacer el push de las imágenes hacia el registro público **Docker Hub**, los cambios a realizar en el archivo YAML serían mínimos:
+
+1. Modificar la acción de Autenticación de Docker para apuntar a Docker Hub:
+```yaml
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+```
+2. Modificar las etiquetas (Tags) de construcción en los jobs para utilizar el namespace de Docker Hub en lugar del servidor ACR:
+```yaml
+      - name: Build and Push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./src/backend/Dockerfile
+          push: true
+          tags: tu-usuario-dockerhub/bas-erp-backend:latest
+```
+
+De esta manera, las imágenes quedarían publicadas globalmente y listas para ser extraídas en cualquier otro entorno en la nube.
