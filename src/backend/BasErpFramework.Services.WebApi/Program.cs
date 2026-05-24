@@ -1,15 +1,15 @@
-
 using BasErpFramework.Domain.Core;
 using BasErpFramework.Infrastructure.Repository;
 using BasErpFramework.Application.Main;
 using BasErpFramework.Services.WebApi.Modules.Swagger;
 using BasErpFramework.Services.WebApi.Modules.Authentication;
-using BasErpFramework.Transversal.Logging;
 using Serilog;
 using BasErpFramework.Transversal.Logging;
 using BasErpFramework.Services.WebApi.Middlewares;
 using BasErpFramework.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using BasErpFramework.Application.Main.Hubs;
 using BasErpFramework.Application.Interface;
 var builder = WebApplication.CreateBuilder(args);
@@ -68,9 +68,9 @@ app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
-
 app.UseCors("CorsPolicy");
+
+app.UseAuthentication();
 
 app.UseMiddleware<TenantMiddleware>();
 
@@ -88,6 +88,19 @@ app.UseMiddleware<TenantMiddleware>();
               tenantContext.TenantId = t;
               using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
               context.Database.EnsureCreated();
+              
+              // Si la base de datos ya existía (ej. pre-creada por Bicep en Azure SQL) pero vacía,
+              // EnsureCreated() no hace nada. Forzamos la creación de tablas con el IRelationalDatabaseCreator.
+              try
+              {
+                  var databaseCreator = context.Database.GetService<IRelationalDatabaseCreator>();
+                  databaseCreator.CreateTables();
+              }
+              catch (Exception ex)
+              {
+                  // Ignorar si las tablas ya existen (ej. cuando ya fueron creadas anteriormente)
+                  Log.Warning("Intento de creación de tablas para inquilino {TenantId}: {Message}", t, ex.Message);
+              }
           }
       }
       catch (Exception ex)
