@@ -11,6 +11,7 @@ on:
 # - AZURE_CREDENTIALS: JSON con las credenciales del Service Principal
 # - ACR_USERNAME: Usuario de tu Azure Container Registry
 # - ACR_PASSWORD: Password de tu Azure Container Registry
+# - SQL_ADMIN_PASSWORD: Password robusto para el administrador de tu SQL Server
 # ---------------------------------------------------------------------------------------
 
 env:
@@ -82,28 +83,25 @@ jobs:
             ${{ env.ACR_LOGIN_SERVER }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ github.sha }}
 
   # ==========================================
-  # JOB 3: Despliegue en Azure Container Apps
+  # JOB 3: Deploy Infrastructure (Bicep)
   # ==========================================
   deploy:
-    name: Deploy to Azure Container Apps
+    name: Deploy Infrastructure and Apps (Bicep)
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout código fuente
+        uses: actions/checkout@v4
+
       - name: Autenticación en Azure CLI
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Desplegar Backend en Container App
-        uses: azure/container-apps-deploy-action@v2
+      - name: Desplegar Infraestructura (Bicep)
+        uses: azure/arm-deploy@v2
         with:
-          resourceGroup: ${{ env.RESOURCE_GROUP }}
-          containerAppName: ${{ env.BACKEND_APP_NAME }}
-          imageToDeploy: ${{ env.ACR_LOGIN_SERVER }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }}
-
-      - name: Desplegar Frontend en Container App
-        uses: azure/container-apps-deploy-action@v2
-        with:
-          resourceGroup: ${{ env.RESOURCE_GROUP }}
-          containerAppName: ${{ env.FRONTEND_APP_NAME }}
-          imageToDeploy: ${{ env.ACR_LOGIN_SERVER }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ github.sha }}
+          resourceGroupName: ${{ env.RESOURCE_GROUP }}
+          template: ./infra/main.bicep
+          parameters: acrLoginServer=${{ env.ACR_LOGIN_SERVER }} acrUsername=${{ secrets.ACR_USERNAME }} acrPassword=${{ secrets.ACR_PASSWORD }} backendImage=${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }} frontendImage=${{ env.FRONTEND_IMAGE_NAME }}:${{ github.sha }} sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }} backendAppName=${{ env.BACKEND_APP_NAME }} frontendAppName=${{ env.FRONTEND_APP_NAME }}
+          failOnStdErr: false
