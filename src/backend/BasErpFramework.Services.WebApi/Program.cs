@@ -74,16 +74,20 @@ app.UseCors("CorsPolicy");
 
 app.UseMiddleware<TenantMiddleware>();
 
-// Auto-migrate default or known tenants (or at least initialize the model)
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    var tenantContext = scope.ServiceProvider.GetRequiredService<ITenantContext>();
-    
-    // Apply schema creation for a default tenant on startup
-    tenantContext.TenantId = "Default";
-    context.Database.EnsureCreated();
-}
+  // Auto-migrate default or known tenants (or at least initialize the model)
+  using (var scope = app.Services.CreateScope())
+  {
+      var tenantContext = scope.ServiceProvider.GetRequiredService<ITenantContext>();
+      
+      var tenants = new[] { "Default", "TenantA", "TenantB" };
+      foreach (var t in tenants)
+      {
+          tenantContext.TenantId = t;
+          using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+          // Precaución: En Azure SQL Básico, EnsureCreated puede tomar unos segundos por cada tenant.
+          context.Database.EnsureCreated();
+      }
+  }
 app.UseAuthorization();
 
 app.MapControllers();

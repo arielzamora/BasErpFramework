@@ -26,14 +26,26 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // En Azure (producción), Bicep inyecta la cadena completa en DefaultConnection
+        // En Azure (producción) o Docker Compose, recibimos la cadena base
         var connectionString = _configuration.GetConnectionString("DefaultConnection");
+        var tenantId = string.IsNullOrEmpty(_tenantContext.TenantId) ? "Default" : _tenantContext.TenantId;
         
-        // Si no está DefaultConnection, asumimos desarrollo local (Multi-tenant SQLEXPRESS)
         if (string.IsNullOrEmpty(connectionString))
         {
-            var tenantId = string.IsNullOrEmpty(_tenantContext.TenantId) ? "Default" : _tenantContext.TenantId;
+            // Desarrollo local sin Docker
             connectionString = $@"Server=localhost\SQLEXPRESS;Database=BasErpBd_{tenantId};Integrated Security=True;TrustServerCertificate=True;";
+        }
+        else
+        {
+            // Entorno Dockerizado o Azure SQL: Modificamos dinámicamente la base de datos
+            var builder = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(connectionString);
+            
+            // Tomamos el nombre base de la BD (ej. BasErpBd) y le añadimos el sufijo del tenant
+            var baseDbName = builder.InitialCatalog.Split('_')[0];
+            if (string.IsNullOrEmpty(baseDbName)) baseDbName = "BasErpBd";
+            
+            builder.InitialCatalog = $"{baseDbName}_{tenantId}";
+            connectionString = builder.ConnectionString;
         }
         
         optionsBuilder.UseSqlServer(connectionString);

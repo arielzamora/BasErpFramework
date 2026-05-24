@@ -21,6 +21,9 @@ A continuación, se presentan los diagramas de arquitectura C4 del sistema:
 ### Contenedores (Nivel 2)
 ![C4 Contenedores](docs/diagrams/c4-container.png)
 
+### Componentes del Backend (Nivel 3)
+![C4 Componentes](docs/diagrams/c4-component.png)
+
 ## Guía de Inicio Rápido (Local) - Ejecución con Docker Compose
 
 Para facilitar la evaluación de esta prueba técnica y asegurar que el entorno sea completamente reproducible sin requerir instalaciones previas de SDKs, se ha provisto un entorno Dockerizado completo.
