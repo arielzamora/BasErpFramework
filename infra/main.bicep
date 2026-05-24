@@ -55,17 +55,23 @@ resource sqlFirewallRule 'Microsoft.Sql/servers/firewallRules@2022-05-01-preview
   }
 }
 
-// 2. Azure SQL Database (Basic Tier)
-resource sqlDatabase 'Microsoft.Sql/servers/databases@2022-05-01-preview' = {
+// 2. Azure SQL Database (Multitenant: Basic Tier)
+var tenants = [
+  'Default'
+  'TenantA'
+  'TenantB'
+]
+
+resource sqlDatabases 'Microsoft.Sql/servers/databases@2022-05-01-preview' = [for tenant in tenants: {
   parent: sqlServer
-  name: sqlDatabaseName
+  name: '${sqlDatabaseName}_${tenant}'
   location: location
   sku: {
     name: 'Basic'
     tier: 'Basic'
     capacity: 5
   }
-}
+}]
 
 // 3. Log Analytics Workspace
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
@@ -94,8 +100,8 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2023-05-01' = {
   }
 }
 
-// Build the SQL Connection string dynamically
-var sqlConnectionString = 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${sqlDatabaseName};Persist Security Info=False;User ID=sqladmin;Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+// Build the SQL Connection string dynamically (Base connection points to Default)
+var sqlConnectionString = 'Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${sqlDatabaseName}_Default;Persist Security Info=False;User ID=sqladmin;Password=${sqlAdminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
 
 // 5. Backend Container App
 resource backendApp 'Microsoft.App/containerApps@2023-05-01' = {
