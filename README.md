@@ -7,7 +7,7 @@ Bienvenido al repositorio oficial del **Framework ERP Multitenant**. Esta Prueba
 El sistema implementa una arquitectura unificada que combina las mejores tecnologías modernas:
 
 - **Frontend Reactivo**: Angular 19 impulsado por **Signals** y un motor de renderizado ultra-rápido (`ChangeDetectionStrategy.OnPush`). Diseñado para actualizar grillas masivas de datos en tiempo real sin congelar la interfaz de usuario.
-- **Backend Modular**: .NET 9 orquestado con **.NET Aspire**. Utiliza un enfoque basado en **CQRS** (Command Query Responsibility Segregation) para separar lecturas de escrituras, y un patrón `Facade` en la capa de aplicación para coordinar flujos complejos sin acoplar el núcleo de negocio.
+- **Backend Modular**: .NET 9 orquestado con **.NET Aspire**. Utiliza un enfoque tradicional de **Arquitectura en N-Capas (N-Tier)** donde los servicios de aplicación (`ProductoService`) orquestan las transacciones a través de un patrón *Unit of Work* y *Repository*, manteniendo la simplicidad y alta cohesión del código.
 - **Tiempo Real**: **SignalR** integrado nativamente para enviar actualizaciones incrementales al cliente, evitando el costoso "Long Polling" y garantizando que los clientes siempre vean los datos en vivo.
 - **Base de Datos**: Microsoft SQL Server.
 
