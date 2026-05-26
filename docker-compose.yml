@@ -31,8 +31,8 @@ services:
 
   frontend:
     build:
-      context: .
-      dockerfile: src/frontend/Dockerfile
+      context: ./src/frontend
+      dockerfile: Dockerfile
     container_name: bas-erp-frontend
     ports:
       - "4200:80"
