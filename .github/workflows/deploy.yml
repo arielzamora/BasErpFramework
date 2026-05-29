@@ -47,61 +47,61 @@ jobs:
   # ==========================================
   # JOB 2: Construir y Subir Imágenes a ACR
   # ==========================================
-  build-and-push:
-    name: Build & Push Docker Images
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout código fuente
-        uses: actions/checkout@v4
-
-      - name: Iniciar sesión en Azure Container Registry (ACR)
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.ACR_LOGIN_SERVER }}
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
-
-      - name: Build y Push del Backend
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./src/backend/Dockerfile
-          push: true
-          tags: |
-            ${{ env.ACR_LOGIN_SERVER }}/${{ env.BACKEND_IMAGE_NAME }}:latest
-            ${{ env.ACR_LOGIN_SERVER }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }}
-
-      - name: Build y Push del Frontend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./src/frontend
-          file: ./src/frontend/Dockerfile
-          push: true
-          tags: |
-            ${{ env.ACR_LOGIN_SERVER }}/${{ env.FRONTEND_IMAGE_NAME }}:latest
-            ${{ env.ACR_LOGIN_SERVER }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ github.sha }}
-
-  # ==========================================
-  # JOB 3: Deploy Infrastructure (Bicep)
-  # ==========================================
-  deploy:
-    name: Deploy Infrastructure and Apps (Bicep)
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout código fuente
-        uses: actions/checkout@v4
-
-      - name: Autenticación en Azure CLI
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Desplegar Infraestructura (Bicep)
-        uses: azure/arm-deploy@v2
-        with:
-          resourceGroupName: ${{ env.RESOURCE_GROUP }}
-          template: ./infra/main.bicep
-          parameters: acrLoginServer=${{ env.ACR_LOGIN_SERVER }} acrUsername=${{ secrets.ACR_USERNAME }} acrPassword=${{ secrets.ACR_PASSWORD }} backendImage=${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }} frontendImage=${{ env.FRONTEND_IMAGE_NAME }}:${{ github.sha }} sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }} backendAppName=${{ env.BACKEND_APP_NAME }} frontendAppName=${{ env.FRONTEND_APP_NAME }}
-          failOnStdErr: false
+  # build-and-push:
+  #   name: Build & Push Docker Images
+  #   needs: test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout código fuente
+  #       uses: actions/checkout@v4
+  # 
+  #     - name: Iniciar sesión en Azure Container Registry (ACR)
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ${{ env.ACR_LOGIN_SERVER }}
+  #         username: ${{ secrets.ACR_USERNAME }}
+  #         password: ${{ secrets.ACR_PASSWORD }}
+  # 
+  #     - name: Build y Push del Backend
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: .
+  #         file: ./src/backend/Dockerfile
+  #         push: true
+  #         tags: |
+  #           ${{ env.ACR_LOGIN_SERVER }}/${{ env.BACKEND_IMAGE_NAME }}:latest
+  #           ${{ env.ACR_LOGIN_SERVER }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }}
+  # 
+  #     - name: Build y Push del Frontend
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: ./src/frontend
+  #         file: ./src/frontend/Dockerfile
+  #         push: true
+  #         tags: |
+  #           ${{ env.ACR_LOGIN_SERVER }}/${{ env.FRONTEND_IMAGE_NAME }}:latest
+  #           ${{ env.ACR_LOGIN_SERVER }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ github.sha }}
+  # 
+  # # ==========================================
+  # # JOB 3: Deploy Infrastructure (Bicep)
+  # # ==========================================
+  # deploy:
+  #   name: Deploy Infrastructure and Apps (Bicep)
+  #   needs: build-and-push
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout código fuente
+  #       uses: actions/checkout@v4
+  # 
+  #     - name: Autenticación en Azure CLI
+  #       uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
+  # 
+  #     - name: Desplegar Infraestructura (Bicep)
+  #       uses: azure/arm-deploy@v2
+  #       with:
+  #         resourceGroupName: ${{ env.RESOURCE_GROUP }}
+  #         template: ./infra/main.bicep
+  #         parameters: acrLoginServer=${{ env.ACR_LOGIN_SERVER }} acrUsername=${{ secrets.ACR_USERNAME }} acrPassword=${{ secrets.ACR_PASSWORD }} backendImage=${{ env.BACKEND_IMAGE_NAME }}:${{ github.sha }} frontendImage=${{ env.FRONTEND_IMAGE_NAME }}:${{ github.sha }} sqlAdminPassword=${{ secrets.SQL_ADMIN_PASSWORD }} backendAppName=${{ env.BACKEND_APP_NAME }} frontendAppName=${{ env.FRONTEND_APP_NAME }}
+  #         failOnStdErr: false
