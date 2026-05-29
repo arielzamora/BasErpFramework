@@ -2,7 +2,7 @@
 
 Bienvenido al repositorio oficial del **Framework ERP Multitenant**. Esta Prueba de Concepto (PoC) demuestra una arquitectura robusta, reactiva y escalable diseñada para soportar hasta 1,500 clientes concurrentes, manejando catálogos de millones de productos con aislamiento estricto de datos y actualizaciones en tiempo real.
 
-🚀 **Despliegue en Vivo (Azure)**: [https://ca-bas-erp-frontend.blackcoast-ff28a7a6.westus2.azurecontainerapps.io/](https://ca-bas-erp-frontend.blackcoast-ff28a7a6.westus2.azurecontainerapps.io/)
+<!-- 🚀 **Despliegue en Vivo (Azure)**: [https://ca-bas-erp-frontend.blackcoast-ff28a7a6.westus2.azurecontainerapps.io/](https://ca-bas-erp-frontend.blackcoast-ff28a7a6.westus2.azurecontainerapps.io/) -->
 
 ## Arquitectura del Sistema
 
